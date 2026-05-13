@@ -6,3 +6,6 @@
 Меняем шаблон в настройках сайта
 
 В bitrix/.settings.php меняем в exception_handling debug на true
+
+В настройках главного модуля настраиваем журнал событий
+![alt text](image-2.png)
