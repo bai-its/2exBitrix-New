@@ -8,12 +8,13 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 
 	$arResult['ITEMS'][$key] = $arItem;
 
-
 	if(CModule::IncludeModule("iblock"))
 	{
 		$feedbackItems = CIBlockElement::GetList(Array("SORT"=>"ASC"), array('PROPERTY_PRODUCT'=>$arItem["ID"], "IBLOCK_ID"=>5), false,  false, array("ID", "PROPERTY_PRODUCT", "PROPERTY_AUTHOR"));
+		$reviewId = 0;
 		while($arFeedback = $feedbackItems->GetNext())
 		{
+			$reviewId += 1;
 			$res = CUser::GetUserGroupList($arFeedback["PROPERTY_AUTHOR_VALUE"]);
 			$userGroups = array();
 			while ($arGroup = $res->Fetch()){
@@ -23,9 +24,12 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 				$rsUser = CUser::GetByID($arFeedback["PROPERTY_AUTHOR_VALUE"]);
 				$arUser = $rsUser->Fetch();
 				if ($arUser['UF_AUTHOR_STATUS'] == 35) {
-					$arResult['ITEMS'][$key]['FEEDBACK'][] = $arFeedback["ID"];
+					$arResult['ITEMS'][$key]['FEEDBACK'][$reviewId] = $arFeedback["ID"];
 				}
 			}
 		}
+		$metaProp = $APPLICATION->GetPageProperty("ex2_meta");
+		$metaProp = str_replace("#count#", $reviewId, $metaProp);
+		$APPLICATION->SetPageProperty("ex2_meta", $metaProp);
 	}
 }
